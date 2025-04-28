@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#000000">
+    <title>Random Video Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center mt-5">
+            <div class="col-md-8 text-center">
+                <h1 class="mb-4">Random Video Chat</h1>
+                <div class="video-container mb-4">
+                    <video id="localVideo" autoplay muted playsinline webkit-playsinline x5-playsinline></video>
+                    <video id="remoteVideo" autoplay playsinline webkit-playsinline x5-playsinline></video>
+                </div>
+                <div class="controls">
+                    <button id="startButton" class="btn btn-primary me-2">Mulai Chat</button>
+                    <button id="nextButton" class="btn btn-warning me-2" disabled>Partner Berikutnya</button>
+                    <button id="stopButton" class="btn btn-danger" disabled>Stop</button>
+                </div>
+                <div id="status" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Izin Kamera & Mikrofon -->
+    <div class="modal fade" id="permissionModal" tabindex="-1" aria-labelledby="permissionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="permissionModalLabel">Izin Kamera & Mikrofon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Aplikasi membutuhkan izin untuk mengakses kamera dan mikrofon Anda. Mohon izinkan akses ketika browser meminta.</p>
+                    <div id="permissionStatus" class="alert alert-info">
+                        Menunggu izin...
+                    </div>
+                    <div id="browserInstructions" class="alert alert-warning d-none">
+                        <strong>Petunjuk Browser:</strong>
+                        <ul class="mb-0">
+                            <li>Chrome: Klik ikon gembok/kamera di address bar</li>
+                            <li>Safari: Klik "Izinkan" pada popup izin</li>
+                            <li>Firefox: Klik ikon kamera di address bar</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-primary" id="requestPermissionBtn">Minta Izin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
