@@ -27,8 +27,8 @@ io.on('connection', (socket) => {
         if (waitingUsers.length > 0) {
             // Ada pengguna yang sedang menunggu
             const partner = waitingUsers.shift();
-            socket.emit('partner-found', { partnerId: partner });
-            io.to(partner).emit('partner-found', { partnerId: socket.id });
+            socket.emit('partner-found', { partnerId: partner, isCaller: false });
+            io.to(partner).emit('partner-found', { partnerId: socket.id, isCaller: true });
         } else {
             // Tidak ada pengguna yang menunggu, tambahkan ke antrian
             waitingUsers.push(socket.id);

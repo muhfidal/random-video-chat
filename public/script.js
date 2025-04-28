@@ -5,6 +5,7 @@ let currentPartner = null;
 let permissionModal;
 let isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 let isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+let isCaller = false;
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
@@ -42,8 +43,9 @@ socket.on('waiting', () => {
     updateStatus('Mencari partner...');
 });
 
-socket.on('partner-found', async ({ partnerId }) => {
+socket.on('partner-found', async ({ partnerId, isCaller: caller }) => {
     currentPartner = partnerId;
+    isCaller = caller;
     updateStatus('Partner ditemukan!');
     nextButton.disabled = false;
     stopButton.disabled = false;
@@ -210,16 +212,18 @@ async function createPeerConnection() {
         }
     };
 
-    try {
-        const offer = await peerConnection.createOffer();
-        await peerConnection.setLocalDescription(offer);
-        socket.emit('signal', {
-            to: currentPartner,
-            signal: offer
-        });
-    } catch (error) {
-        console.error('Error creating offer:', error);
-        updateStatus('Error: Gagal membuat koneksi');
+    if (isCaller) {
+        try {
+            const offer = await peerConnection.createOffer();
+            await peerConnection.setLocalDescription(offer);
+            socket.emit('signal', {
+                to: currentPartner,
+                signal: offer
+            });
+        } catch (error) {
+            console.error('Error creating offer:', error);
+            updateStatus('Error: Gagal membuat koneksi');
+        }
     }
 }
 
