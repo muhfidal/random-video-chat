@@ -20,6 +20,13 @@
                     <video id="localVideo" autoplay muted playsinline webkit-playsinline x5-playsinline></video>
                     <video id="remoteVideo" autoplay playsinline webkit-playsinline x5-playsinline></video>
                 </div>
+                <div class="chat-container mb-4">
+                    <div id="chatBox" class="chat-box"></div>
+                    <form id="chatForm" class="d-flex mt-2">
+                        <input type="text" id="chatInput" class="form-control me-2" placeholder="Ketik pesan..." autocomplete="off" />
+                        <button type="submit" class="btn btn-success">Kirim</button>
+                    </form>
+                </div>
                 <div class="controls">
                     <button id="startButton" class="btn btn-primary me-2">Mulai Chat</button>
                     <button id="nextButton" class="btn btn-warning me-2" disabled>Partner Berikutnya</button>

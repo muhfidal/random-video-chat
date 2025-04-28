@@ -45,6 +45,15 @@ io.on('connection', (socket) => {
     socket.on('next-partner', () => {
         // Hapus dari antrian jika ada
         waitingUsers = waitingUsers.filter(id => id !== socket.id);
+        // Putuskan partner jika ada
+        for (let i = 0; i < waitingUsers.length; i++) {
+            if (waitingUsers[i] === socket.id) {
+                waitingUsers.splice(i, 1);
+                break;
+            }
+        }
+        // Broadcast ke partner untuk next juga
+        socket.broadcast.emit('force-next', { from: socket.id });
         // Cari pasangan baru
         socket.emit('find-partner');
     });
@@ -53,6 +62,11 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         waitingUsers = waitingUsers.filter(id => id !== socket.id);
         console.log('User disconnected:', socket.id);
+    });
+
+    // Event chat-message
+    socket.on('chat-message', ({ to, message }) => {
+        io.to(to).emit('chat-message', { message });
     });
 });
 

@@ -35,4 +35,38 @@ video {
         width: 100%;
         margin-bottom: 10px;
     }
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+}
+
+.chat-box {
+    height: 180px;
+    background: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.chat-message {
+    margin-bottom: 8px;
+}
+
+.chat-message.me {
+    text-align: right;
+    color: #0d6efd;
+}
+
+.chat-message.partner {
+    text-align: left;
+    color: #212529;
+}
+
+#chatInput {
+    flex: 1;
 } 

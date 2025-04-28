@@ -16,6 +16,9 @@ const statusDiv = document.getElementById('status');
 const permissionStatus = document.getElementById('permissionStatus');
 const requestPermissionBtn = document.getElementById('requestPermissionBtn');
 const browserInstructions = document.getElementById('browserInstructions');
+const chatBox = document.getElementById('chatBox');
+const chatForm = document.getElementById('chatForm');
+const chatInput = document.getElementById('chatInput');
 
 const configuration = {
     iceServers: [
@@ -37,6 +40,15 @@ startButton.addEventListener('click', checkAndRequestPermissions);
 nextButton.addEventListener('click', findNextPartner);
 stopButton.addEventListener('click', stopChat);
 requestPermissionBtn.addEventListener('click', requestPermissions);
+chatForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (msg && currentPartner) {
+        socket.emit('chat-message', { to: currentPartner, message: msg });
+        appendChatMessage(msg, 'me');
+        chatInput.value = '';
+    }
+});
 
 // Socket Events
 socket.on('waiting', () => {
@@ -51,6 +63,7 @@ socket.on('partner-found', async ({ partnerId, isCaller: caller }) => {
     stopButton.disabled = false;
     startButton.disabled = true;
     await createPeerConnection();
+    resetChatBox();
 });
 
 socket.on('signal', async ({ from, signal }) => {
@@ -61,6 +74,20 @@ socket.on('signal', async ({ from, signal }) => {
     } else if (signal.type === 'candidate') {
         await handleCandidate(signal);
     }
+});
+
+socket.on('chat-message', ({ message }) => {
+    appendChatMessage(message, 'partner');
+});
+
+socket.on('force-next', () => {
+    if (peerConnection) {
+        peerConnection.close();
+    }
+    currentPartner = null;
+    resetChatBox();
+    updateStatus('Partner meninggalkan chat. Mencari partner baru...');
+    socket.emit('find-partner');
 });
 
 // Functions
@@ -277,6 +304,7 @@ function findNextPartner() {
         socket.emit('next-partner');
         currentPartner = null;
     }
+    resetChatBox();
     updateStatus('Mencari partner baru...');
 }
 
@@ -293,9 +321,22 @@ function stopChat() {
     startButton.disabled = false;
     nextButton.disabled = true;
     stopButton.disabled = true;
+    resetChatBox();
     updateStatus('Chat dihentikan');
 }
 
 function updateStatus(message) {
     statusDiv.textContent = message;
+}
+
+function appendChatMessage(msg, sender) {
+    const div = document.createElement('div');
+    div.className = 'chat-message ' + sender;
+    div.textContent = msg;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function resetChatBox() {
+    chatBox.innerHTML = '';
 } 
