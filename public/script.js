@@ -235,9 +235,18 @@ async function handleOffer(offer) {
 
 async function handleAnswer(answer) {
     try {
-        await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        if (!peerConnection) {
+            console.error('peerConnection belum dibuat saat menerima answer');
+            updateStatus('Error: PeerConnection tidak tersedia.');
+            return;
+        }
+        if (peerConnection.signalingState === "have-local-offer") {
+            await peerConnection.setRemoteDescription(new RTCSessionDescription(answer));
+        } else {
+            console.warn('Signaling state tidak sesuai untuk menerima answer:', peerConnection.signalingState);
+        }
     } catch (error) {
-        console.error('Error handling answer:', error);
+        console.error('Error handling answer:', error, answer);
         updateStatus('Error: Gagal menangani jawaban');
     }
 }
