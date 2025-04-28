@@ -23,7 +23,12 @@ const chatInput = document.getElementById('chatInput');
 const configuration = {
     iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+        }
     ]
 };
 
@@ -67,11 +72,15 @@ socket.on('partner-found', async ({ partnerId, isCaller: caller }) => {
 });
 
 socket.on('signal', async ({ from, signal }) => {
+    console.log('Signal diterima:', signal.type || signal);
     if (signal.type === 'offer') {
+        console.log('handleOffer', signal);
         await handleOffer(signal);
     } else if (signal.type === 'answer') {
+        console.log('handleAnswer', signal);
         await handleAnswer(signal);
     } else if (signal.type === 'candidate') {
+        console.log('handleCandidate', signal);
         await handleCandidate(signal);
     }
 });
@@ -227,11 +236,13 @@ async function createPeerConnection() {
     });
 
     peerConnection.ontrack = event => {
+        console.log('ontrack event:', event);
         remoteVideo.srcObject = event.streams[0];
     };
 
     peerConnection.onicecandidate = event => {
         if (event.candidate) {
+            console.log('Kirim ICE candidate:', event.candidate);
             socket.emit('signal', {
                 to: currentPartner,
                 signal: event.candidate
@@ -243,6 +254,7 @@ async function createPeerConnection() {
         try {
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
+            console.log('Buat dan kirim offer:', offer);
             socket.emit('signal', {
                 to: currentPartner,
                 signal: offer
@@ -289,6 +301,7 @@ async function handleAnswer(answer) {
 
 async function handleCandidate(candidate) {
     try {
+        console.log('Terima ICE candidate:', candidate);
         await peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
     } catch (error) {
         console.error('Error handling candidate:', error);
