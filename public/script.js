@@ -67,6 +67,11 @@ async function checkAndRequestPermissions() {
         // Cek izin yang sudah ada
         const permissions = await navigator.permissions.query({ name: 'camera' });
         if (permissions.state === 'granted') {
+            // Cek juga apakah localStream sudah ada
+            if (!localStream) {
+                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                localVideo.srcObject = localStream;
+            }
             await startChat();
         } else {
             permissionModal.show();
